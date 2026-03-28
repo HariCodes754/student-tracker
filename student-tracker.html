@@ -1,235 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Student Dashboard</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial;
-      background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-      color: white;
-      text-align: center;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: auto;
-    }
-
-    input {
-      padding: 10px;
-      margin: 5px;
-      border-radius: 8px;
-      border: none;
-    }
-
-    button {
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .card {
-      background: rgba(255,255,255,0.1);
-      backdrop-filter: blur(10px);
-      padding: 15px;
-      margin: 10px;
-      border-radius: 12px;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    canvas {
-      background: white;
-      border-radius: 10px;
-      margin-top: 20px;
-    }
-  </style>
+  <title>Student Tracker</title>
 </head>
-
 <body>
 
-<h2>Student Tracker</h2>
+  <h2>Student Tracker</h2>
 
-<input type="text" id="taskInput" placeholder="Enter task">
-<button onclick="addTask()">Add</button>
+  <input type="text" id="taskInput" placeholder="Enter task">
+  <button onclick="addTask()">Add</button>
 
-<ul id="taskList"></ul>
-<div id="loginPage" class="container">
-  <h1>🔐 Login</h1>
-  <input id="username" placeholder="Enter Name">
-  <button onclick="login()">Login</button>
-</div>
+  <ul id="taskList"></ul>
 
-<div id="appPage" class="container hidden">
+  <script>
+    function addTask() {
+      let input = document.getElementById("taskInput");
+      let task = input.value;
 
-  <h1>📊 Student Dashboard</h1>
-  <button onclick="logout()">Logout</button>
-
-  <br><br>
-
-  <input id="subject" placeholder="Subject">
-  <input id="marks" type="number" placeholder="Marks">
-  <button onclick="addData()">Add</button>
-  <button onclick="clearData()">Clear</button>
-
-  <div class="card">
-    <h3>Marks</h3>
-    <ul id="list"></ul>
-  </div>
-
-  <div class="card" id="stats"></div>
-
-  <canvas id="myChart"></canvas>
-
-</div>
-
-<script>
-let subjects = [];
-let marks = [];
-
-// LOGIN SYSTEM
-function login() {
-  let user = document.getElementById("username").value;
-  if(user === "") return alert("Enter name");
-
-  localStorage.setItem("user", user);
-  loadApp();
-}
-
-function logout() {
-  localStorage.removeItem("user");
-  location.reload();
-}
-
-function loadApp() {
-  document.getElementById("loginPage").classList.add("hidden");
-  document.getElementById("appPage").classList.remove("hidden");
-
-  subjects = JSON.parse(localStorage.getItem("subjects")) || [];
-  marks = JSON.parse(localStorage.getItem("marks")) || [];
-
-  displayData();
-  updateChart();
-  analyze();
-}
-
-window.onload = function() {
-  if(localStorage.getItem("user")) {
-    loadApp();
-  }
-}
-
-// ADD DATA
-function addData() {
-  let sub = document.getElementById("subject").value;
-  let mark = document.getElementById("marks").value;
-
-  if(sub === "" || mark === "") return alert("Enter details");
-
-  subjects.push(sub);
-  marks.push(Number(mark));
-
-  localStorage.setItem("subjects", JSON.stringify(subjects));
-  localStorage.setItem("marks", JSON.stringify(marks));
-
-  displayData();
-  updateChart();
-  analyze();
-}
-
-// DISPLAY
-function displayData() {
-  document.getElementById("list").innerHTML = "";
-  subjects.forEach((s,i)=>{
-    document.getElementById("list").innerHTML += `<li>${s} : ${marks[i]}</li>`;
-  });
-}
-
-// ANALYSIS
-function analyze() {
-  if(marks.length === 0) return;
-
-  let total = marks.reduce((a,b)=>a+b,0);
-  let avg = (total/marks.length).toFixed(2);
-  let min = Math.min(...marks);
-  let max = Math.max(...marks);
-
-  let weak = subjects[marks.indexOf(min)];
-  let strong = subjects[marks.indexOf(max)];
-
-  document.getElementById("stats").innerHTML = `
-    <h3>📊 Avg: ${avg}</h3>
-    <h3>⚠ Weak: ${weak}</h3>
-    <h3>🔥 Strong: ${strong}</h3>
-  `;
-}
-
-// CLEAR
-function clearData() {
-  localStorage.removeItem("subjects");
-  localStorage.removeItem("marks");
-  subjects = [];
-  marks = [];
-  displayData();
-  updateChart();
-  document.getElementById("stats").innerHTML = "";
-}
-
-// CHART
-let chart = new Chart(document.getElementById("myChart"), {
-  type: 'bar',
-  data: {
-    labels: subjects,
-    datasets: [{
-      label: 'Marks',
-      data: marks,
-      backgroundColor: ['#00c6ff','#0072ff','#00ff95','#ffcc00','#ff4d4d']
-    }]
-  },
-  options: {
-    plugins: {
-      legend: {
-        labels: { color: 'black' }
+      if (task === "") {
+        alert("Enter a task!");
+        return;
       }
+
+      let li = document.createElement("li");
+      li.innerText = task;
+
+      document.getElementById("taskList").appendChild(li);
+
+      input.value = "";
     }
-  }
-});
+  </script>
 
-function updateChart() {
-  chart.data.labels = subjects;
-  chart.data.datasets[0].data = marks;
-  chart.update();
-}
-<h2>Student Tracker</h2>
-
-<input type="text" id="taskInput" placeholder="Enter task">
-<button onclick="addTask()">Add</button>
-
-<ul id="taskList"></ul>
-
-<script>
-function addTask() {
-  let input = document.getElementById("taskInput");
-  let task = input.value;
-
-  if (task === "") {
-    alert("Enter a task!");
-    return;
-  }
-
-  let li = document.createElement("li");
-  li.innerText = task;
-
-  document.getElementById("taskList").appendChild(li);
-
-  input.value = "";
-}
-</script>
 </body>
 </html>
