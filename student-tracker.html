@@ -54,6 +54,12 @@
 
 <body>
 
+<h2>Student Tracker</h2>
+
+<input type="text" id="taskInput" placeholder="Enter task">
+<button onclick="addTask()">Add</button>
+
+<ul id="taskList"></ul>
 <div id="loginPage" class="container">
   <h1>🔐 Login</h1>
   <input id="username" placeholder="Enter Name">
@@ -200,7 +206,30 @@ function updateChart() {
   chart.data.datasets[0].data = marks;
   chart.update();
 }
-</script>
+<h2>Student Tracker</h2>
 
+<input type="text" id="taskInput" placeholder="Enter task">
+<button onclick="addTask()">Add</button>
+
+<ul id="taskList"></ul>
+
+<script>
+function addTask() {
+  let input = document.getElementById("taskInput");
+  let task = input.value;
+
+  if (task === "") {
+    alert("Enter a task!");
+    return;
+  }
+
+  let li = document.createElement("li");
+  li.innerText = task;
+
+  document.getElementById("taskList").appendChild(li);
+
+  input.value = "";
+}
+</script>
 </body>
 </html>
